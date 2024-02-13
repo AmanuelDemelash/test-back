@@ -4,17 +4,21 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { UtilService } from 'src/util/util.service';
+import { promises } from 'dns';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepository:Repository<User>){}
+  constructor(@InjectRepository(User) private userRepository:Repository<User>,private utileService:UtilService){}
 
- async create(createUserDto: CreateUserDto) {
+ async create(createUserDto: CreateUserDto):Promise<User>{   
     try {
-          return this.userRepository.save(createUserDto);
+          const userData=createUserDto;
+          userData.password=await this.utileService.hashPassword(userData.password.toString());
+          return this.userRepository.save(userData);
 
     } catch (error) {
-     return  new HttpException(error,HttpStatus.BAD_REQUEST)
+     throw new HttpException(error,HttpStatus.UNPROCESSABLE_ENTITY)
       
     }
   }
@@ -43,5 +47,9 @@ export class UserService {
 
   remove(id: number) {
     return this.userRepository.delete({id:id});
+  }
+
+ async findOneByEmail(email:String):Promise<User>{
+     return await this.userRepository.findOneBy({email:email});
   }
 }
