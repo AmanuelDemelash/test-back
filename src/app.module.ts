@@ -1,15 +1,30 @@
 import { MiddlewareConsumer, Module, NestMiddleware, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TestmidMiddleware } from './middleware/testmid/testmid.middleware';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+      type: 'mariadb',
+      host: 'localhost',
+      port: 3306,
+      username: 'test',
+      password: 'test1',
+      database: 'testDb',
+      entities: [User],
+      synchronize: true,
+      autoLoadEntities:true
+    }),
+    AuthModule,
+    UserModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule{
   
