@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestMiddleware, NestModule } from '@nestjs/common';
-import { TestmidMiddleware } from './middleware/testmid/testmid.middleware';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
